@@ -7,10 +7,19 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	//"strings"
 	"syscall"
 )
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+
+	// strSlice := strings.Split(m.Content, " ")
+
+
+	// x := len(strSlice)
+
+	// if x
+	// fmt.Println(strSlice[1])
 
 	if m.Content == "Test" {
 		s.ChannelMessageSend(m.ChannelID, "Hello, it's Dave")
@@ -33,7 +42,7 @@ func main() {
 		return
 	}
 
-	//Register messageCreate func as a callback for MesesageCreate events
+	// Register messageCreate func as a callback for MesesageCreate events
 	discord.AddHandler(messageCreate)
 
 	err = discord.Open()
@@ -42,7 +51,7 @@ func main() {
 		return
 	}
 
-	// This block of code keeps the program running until it receives a termination signal (e.g., CTRL-C).
+	// Keeps the program running until it receives a termination signal (e.g., CTRL-C).
 	// 1. A channel named `sc` is created to listen for OS signals (like "CTRL-C").
 	// 2. The `signal.Notify` function tells Go to send specific signals (SIGINT, SIGTERM, etc.) to this channel.
 	// 3. The `<-sc` statement pauses the program, waiting for a signal to arrive.
