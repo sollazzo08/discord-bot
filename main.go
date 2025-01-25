@@ -7,22 +7,37 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	//"strings"
+	"strings"
 	"syscall"
 )
 
+// I first need to split the entire string including the command by spaces
+// Then I check the length of the slice
+// If len is 2 then i take the city as index 1
+// If len is 3 then I take both index 1 and 2 as the city concated by a space index 1 + " " index 2
+// if len is 1 then its an error
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-	// strSlice := strings.Split(m.Content, " ")
+	strSlice := strings.Split(m.Content, " ")
 
+	if strSlice[0] == "!weather" {
 
-	// x := len(strSlice)
+		x := len(strSlice)
+		if x == 1 && strSlice[0] == "!weather" {
+			s.ChannelMessageSend(m.ChannelID, "Please enter a city following the !weather command -> i.e. !weather Yonkers")
+		}
 
-	// if x
-	// fmt.Println(strSlice[1])
+		if x == 2 {
+			fmt.Println(strSlice[0], strSlice[1])
+		}
 
-	if m.Content == "Test" {
-		s.ChannelMessageSend(m.ChannelID, "Hello, it's Dave")
+		if x == 3 {
+			fmt.Println(strSlice[0], strSlice[1], strSlice[2])
+		}
+
+		if x == 4 {
+			fmt.Println(strSlice[0], strSlice[1], strSlice[2], strSlice[4])
+		}
 	}
 }
 
