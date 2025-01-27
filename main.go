@@ -4,39 +4,48 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
 )
 
-// I first need to split the entire string including the command by spaces
-// Then I check the length of the slice
-// If len is 2 then i take the city as index 1
-// If len is 3 then I take both index 1 and 2 as the city concated by a space index 1 + " " index 2
-// if len is 1 then its an error
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-
+	// Split the message content into parts
 	strSlice := strings.Split(m.Content, " ")
 
+	// Check if the message starts with the weather command
 	if strSlice[0] == "!weather" {
-
-		x := len(strSlice)
-		if x == 1 && strSlice[0] == "!weather" {
-			s.ChannelMessageSend(m.ChannelID, "Please enter a city following the !weather command -> i.e. !weather Yonkers")
+		// If no ZIP code is provided
+		if len(strSlice) == 1 {
+			s.ChannelMessageSend(m.ChannelID, "Please enter a 5-digit ZIP code following the !weather command, e.g., `!weather 11111`")
+			return
 		}
 
-		if x == 2 {
-			fmt.Println(strSlice[0], strSlice[1])
-		}
+		// If a ZIP code is provided
+		if len(strSlice) == 2 {
+			zip := strSlice[1]
 
-		if x == 3 {
-			fmt.Println(strSlice[0], strSlice[1], strSlice[2])
-		}
+			// Call the weather service
+			resp, err := http.Get("http://localhost:8090/api/v1/weather?zip=" + zip)
+			if err != nil {
+				s.ChannelMessageSend(m.ChannelID, "Error fetching weather data: "+err.Error())
+				return
+			}
+			defer resp.Body.Close()
 
-		if x == 4 {
-			fmt.Println(strSlice[0], strSlice[1], strSlice[2], strSlice[4])
+			// Read the response body
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				s.ChannelMessageSend(m.ChannelID, "Error reading response: "+err.Error())
+				return
+			}
+
+			// Send the raw JSON back to Discord
+			s.ChannelMessageSend(m.ChannelID, "Weather Data:\n```json\n"+string(body)+"\n```")
 		}
 	}
 }

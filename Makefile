@@ -13,3 +13,6 @@ build: vet
 clean:
 	@echo "Cleaning up..."
 	rm -f discord-bot
+run: build
+	@echo "Running the application..."
+	./discord-bot
