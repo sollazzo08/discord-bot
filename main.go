@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
@@ -11,7 +12,79 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 )
+
+type WeatherResponse struct {
+	Name string `json:"name"`
+	Sys  struct {
+		Country string `json:"country"`
+		Sunrise int64  `json:"sunrise"`
+		Sunset  int64  `json:"sunset"`
+	} `json:"sys"`
+	Main struct {
+		Temp      float64 `json:"temp"`
+		FeelsLike float64 `json:"feels_like"`
+		Humidity  int     `json:"humidity"`
+		Pressure  int     `json:"pressure"`
+	} `json:"main"`
+	Wind struct {
+		Speed float64 `json:"speed"`
+		Gust  float64 `json:"gust"`
+	} `json:"wind"`
+	Clouds struct {
+		All int `json:"all"`
+	} `json:"clouds"`
+	Weather []struct {
+		Main        string `json:"main"`
+		Description string `json:"description"`
+	} `json:"weather"`
+}
+
+func formatWeatherResponse(body []byte) string {
+	var weatherData WeatherResponse
+	err := json.Unmarshal(body, &weatherData)
+	if err != nil {
+		return "Error parsing weather data."
+	}
+
+	// Convert timestamps to human-readable time
+	sunrise := time.Unix(weatherData.Sys.Sunrise, 0).Format("03:04 PM")
+	sunset := time.Unix(weatherData.Sys.Sunset, 0).Format("03:04 PM")
+
+	// Extract weather details
+	weatherCondition := "Unknown"
+	if len(weatherData.Weather) > 0 {
+		weatherCondition = weatherData.Weather[0].Description
+	}
+
+	// Format the response as a readable message
+	message := fmt.Sprintf(
+		"Weather for %s, %s\n\n"+
+			"Temperature: %.2f°F (Feels like %.2f°F)\n"+
+			"Wind: %.1f mph, Gusts up to %.1f mph\n"+
+			"Cloud Cover: %d%% (%s)\n"+
+			"Humidity: %d%%\n"+
+			"Pressure: %d hPa\n\n"+
+			"Sunrise: %s\n"+
+			"Sunset: %s\n\n",
+		weatherData.Name, weatherData.Sys.Country,
+		weatherData.Main.Temp, weatherData.Main.FeelsLike,
+		weatherData.Wind.Speed, weatherData.Wind.Gust,
+		weatherData.Clouds.All, weatherCondition,
+		weatherData.Main.Humidity,
+		weatherData.Main.Pressure,
+		sunrise, sunset,
+	)
+
+	return message
+}
+
+// Function to send the formatted weather response to Discord
+func sendWeatherResponse(s *discordgo.Session, m *discordgo.MessageCreate, body []byte) {
+	formattedMessage := formatWeatherResponse(body)
+	s.ChannelMessageSend(m.ChannelID, formattedMessage)
+}
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Split the message content into parts
@@ -38,14 +111,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			defer resp.Body.Close()
 
 			// Read the response body
-			body, err := io.ReadAll(resp.Body)
+			weatherData, err := io.ReadAll(resp.Body)
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, "Error reading response: "+err.Error())
 				return
 			}
 
-			// Send the raw JSON back to Discord
-			s.ChannelMessageSend(m.ChannelID, "Weather Data:\n```json\n"+string(body)+"\n```")
+			// Send the formatted response to Discord
+			sendWeatherResponse(s, m, weatherData)
 		}
 	}
 }
