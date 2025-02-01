@@ -12,6 +12,8 @@ import (
 	"github.com/sollazzo08/discord-bot/internal/models"
 )
 
+var userRequests = make(map[string]int)
+
 func formatWeatherResponse(body []byte) string {
 	var weatherData models.WeatherResponse
 	err := json.Unmarshal(body, &weatherData)
@@ -56,6 +58,19 @@ func sendWeatherResponse(s *discordgo.Session, m *discordgo.MessageCreate, body 
 	formattedMessage := formatWeatherResponse(body)
 	s.ChannelMessageSend(m.ChannelID, formattedMessage)
 }
+// Rate limiting user to 5 requests in one day
+func trackUserRequests(m *discordgo.MessageCreate) int {
+	// When the user uses the weather command we add them to a map where the key is their discord user or id and the value is the number of requests they have made.
+	// we need to create a map
+
+	userRequests[m.Author.ID]++
+
+	numberOfRequests := userRequests[m.Author.ID]
+
+	// fmt.Println("number of requests:", numberOfRequests)
+
+	return numberOfRequests
+}
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Split the message content into parts
@@ -72,9 +87,17 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		// If a ZIP code is provided
 		if len(strSlice) == 2 {
 			zip := strSlice[1]
+			numberOfUserRequests := trackUserRequests(m)
+
+			if numberOfUserRequests >= 5 {
+
+				s.ChannelMessageSend(m.ChannelID, "Number of daily requests exceeded")
+				return
+
+			}
 
 			// Call the weather service
-			resp, err := http.Get("http://weather-service:8090/api/v1/weather?zip=" + zip)
+			resp, err := http.Get("http://localhost:8090/api/v1/weather?zip=" + zip)
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, "Error fetching weather data: "+err.Error())
 				return
