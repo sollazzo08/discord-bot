@@ -74,7 +74,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			zip := strSlice[1]
 
 			// Call the weather service
-			resp, err := http.Get("http://localhost:8090/api/v1/weather?zip=" + zip)
+			resp, err := http.Get("http://weather-service:8090/api/v1/weather?zip=" + zip)
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, "Error fetching weather data: "+err.Error())
 				return
