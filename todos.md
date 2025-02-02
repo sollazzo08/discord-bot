@@ -17,3 +17,5 @@
 - [X] Reformat the weather service response to Discord users by converting raw JSON into a more user-friendly, readable message.
 - [ ] Create instructions on main readme
 - [ ] Fix sunrise and sunset time bug: sunset and sunrise are not accurate during late EST hours
+- [ ] Add a weatherCommand handler
+- [ ] Use different API endpoints based on whether it is running locally or in Docker.

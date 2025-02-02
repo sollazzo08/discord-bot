@@ -63,6 +63,7 @@ func trackUserRequests(m *discordgo.MessageCreate) int {
 	// When the user uses the weather command we add them to a map where the key is their discord user or id and the value is the number of requests they have made.
 	// we need to create a map
 
+	// { key: userID, value: count++}
 	userRequests[m.Author.ID]++
 
 	numberOfRequests := userRequests[m.Author.ID]
