@@ -12,7 +12,10 @@ import (
 	"github.com/sollazzo08/discord-bot/internal/models"
 )
 
-var userRequests = make(map[string]int)
+var (
+	userRequests     = make(map[string]int)
+	coolDownUserList = make(map[string]time.Time)
+)
 
 func formatWeatherResponse(body []byte) string {
 	var weatherData models.WeatherResponse
@@ -58,6 +61,7 @@ func sendWeatherResponse(s *discordgo.Session, m *discordgo.MessageCreate, body 
 	formattedMessage := formatWeatherResponse(body)
 	s.ChannelMessageSend(m.ChannelID, formattedMessage)
 }
+
 // Rate limiting user to 5 requests in one day
 func trackUserRequests(m *discordgo.MessageCreate) int {
 	// When the user uses the weather command we add them to a map where the key is their discord user or id and the value is the number of requests they have made.
@@ -92,9 +96,27 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 			if numberOfUserRequests >= 5 {
 
-				s.ChannelMessageSend(m.ChannelID, "Number of daily requests exceeded")
-				return
+				// lets check if they are in the cooldown list
+				initialTimeStamp, exists := coolDownUserList[m.Author.ID]
+				if exists {
+					// get remaining cooldown time
+					coolDownRemaining := time.Until(initialTimeStamp)
 
+					if coolDownRemaining > 0 {
+						message := fmt.Sprintf("You're on cooldown. Try again in %v.", coolDownRemaining.Round(time.Minute))
+						s.ChannelMessageSend(m.ChannelID, message)
+						return
+					}
+					// Cooldown expired, reset user
+					delete(coolDownUserList, m.Author.ID)
+					userRequests[m.Author.ID] = 0
+
+				}
+
+				// Start a new 24-hour cooldown for the user
+				coolDownUserList[m.Author.ID] = time.Now().Add(24 * time.Hour)
+				s.ChannelMessageSend(m.ChannelID, "You've reached the limit. Please wait 24 hours before using `!weather` again.")
+				return
 			}
 
 			// Call the weather service

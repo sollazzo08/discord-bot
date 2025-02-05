@@ -10,7 +10,7 @@
 
 - [ ] Add concurrency support when making calls out to my weather service
 - [X] Add rate limiting
-- [ ] Reset the rate limit block after 24 hours
+- [X] Reset the rate limit block after 24 hours
 - [X] Add DockerFile
 - [ ] Research Discord rich embeds for more visual responses
 - [X] Restructure the Discord bot file directory to support different features instead of having everything in main.go.
@@ -19,3 +19,8 @@
 - [ ] Fix sunrise and sunset time bug: sunset and sunrise are not accurate during late EST hours
 - [ ] Add a weatherCommand handler
 - [ ] Use different API endpoints based on whether it is running locally or in Docker.
+
+
+once user hits 5 requests we store a timestamp in a cooldown map. If they request a 6th time we get the current time and compare to the timestamp and see if 24 hours has passed.
+
+
