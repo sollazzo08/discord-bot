@@ -11,7 +11,6 @@ import (
 	"github.com/sollazzo08/discord-bot/config"
 	"github.com/sollazzo08/discord-bot/internal/commands"
 	"github.com/sollazzo08/discord-bot/internal/events"
-
 )
 
 func main() {

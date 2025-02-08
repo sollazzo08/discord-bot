@@ -5,8 +5,7 @@
 
 - [ ] Add Event Listeners:
   - [ ] Add !role for listing out all the available server roles
-  - [ ] Custom Welcome message
-  - [ ] Role assignment -> reaction roles
+  - [X] Role assignment -> reaction roles
 
 - [ ] Add concurrency support when making calls out to my weather service
 - [X] Add rate limiting
