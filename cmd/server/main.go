@@ -10,6 +10,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/sollazzo08/discord-bot/config"
 	"github.com/sollazzo08/discord-bot/internal/commands"
+	"github.com/sollazzo08/discord-bot/internal/events"
+
 )
 
 func main() {
@@ -30,6 +32,7 @@ func main() {
 	// Register messageCreate func as a callback for MesesageCreate events
 
 	discord.AddHandler(commands.MessageCreate)
+	discord.AddHandler(events.ReactToRoleSelection)
 
 	err = discord.Open()
 	if err != nil {
