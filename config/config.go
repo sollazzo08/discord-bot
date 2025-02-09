@@ -19,7 +19,7 @@ func LoadConfig() (*Config, error) {
 		log.Fatal("Error loading .env file")
 	}
 
-	botToken := os.Getenv("BOT_TOKEN")
+	botToken := os.Getenv("TEST_BOT_TOKEN")
 
 	if botToken == "" {
 		return nil, fmt.Errorf("missing required environment variables")

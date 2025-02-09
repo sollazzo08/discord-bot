@@ -18,6 +18,7 @@
 - [ ] Fix sunrise and sunset time bug: sunset and sunrise are not accurate during late EST hours
 - [ ] Add a weatherCommand handler
 - [ ] Use different API endpoints based on whether it is running locally or in Docker.
+- [ ] Add zip code caching
 
 
 once user hits 5 requests we store a timestamp in a cooldown map. If they request a 6th time we get the current time and compare to the timestamp and see if 24 hours has passed.
