@@ -15,10 +15,12 @@
 - [X] Restructure the Discord bot file directory to support different features instead of having everything in main.go.
 - [X] Reformat the weather service response to Discord users by converting raw JSON into a more user-friendly, readable message.
 - [ ] Create instructions on main readme
-- [ ] Fix sunrise and sunset time bug: sunset and sunrise are not accurate during late EST hours
+- [X] Fix sunrise and sunset time bug: sunset and sunrise are not accurate during late EST hours
 - [ ] Add a weatherCommand handler
 - [ ] Use different API endpoints based on whether it is running locally or in Docker.
-- [ ] Add zip code caching
+- [ ] Add zip code caching (would require a DB, could look into using sql-lite)
+- [X] Update Rate Limit to 25 request per day per user
+- [ ] Handle invalid zip codes
 
 
 once user hits 5 requests we store a timestamp in a cooldown map. If they request a 6th time we get the current time and compare to the timestamp and see if 24 hours has passed.

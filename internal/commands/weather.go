@@ -24,9 +24,12 @@ func formatWeatherResponse(body []byte) string {
 		return "Error parsing weather data."
 	}
 
-	// Convert timestamps to human-readable time
-	sunrise := time.Unix(weatherData.Sys.Sunrise, 0).Format("03:04 PM")
-	sunset := time.Unix(weatherData.Sys.Sunset, 0).Format("03:04 PM")
+	// Get the timezone offset from OpenWeather (in seconds)
+	offset := weatherData.Timezone
+
+	// Convert sunrise & sunset to local time
+	sunrise := time.Unix(weatherData.Sys.Sunrise, 0).UTC().Add(time.Second * time.Duration(offset)).Format("03:04 PM")
+	sunset := time.Unix(weatherData.Sys.Sunset, 0).UTC().Add(time.Second * time.Duration(offset)).Format("03:04 PM")
 
 	// Extract weather details
 	weatherCondition := "Unknown"
@@ -80,9 +83,11 @@ func trackUserRequests(m *discordgo.MessageCreate) int {
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Split the message content into parts
 	strSlice := strings.Split(m.Content, " ")
-
+	fmt.Println("hello")
+	fmt.Println(strSlice)
 	// Check if the message starts with the weather command
-	if strSlice[0] == "!weather" {
+	if strSlice[0] == "!weatherTest" {
+		fmt.Println("test")
 		// If no ZIP code is provided
 		if len(strSlice) == 1 {
 			s.ChannelMessageSend(m.ChannelID, "Please enter a 5-digit ZIP code following the !weather command, e.g., `!weather 11111`")
@@ -94,7 +99,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			zip := strSlice[1]
 			numberOfUserRequests := trackUserRequests(m)
 
-			if numberOfUserRequests >= 5 {
+			if numberOfUserRequests >= 25 {
 
 				// lets check if they are in the cooldown list
 				initialTimeStamp, exists := coolDownUserList[m.Author.ID]

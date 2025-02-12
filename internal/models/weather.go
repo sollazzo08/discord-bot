@@ -1,8 +1,9 @@
 package models
 
 type WeatherResponse struct {
-	Name string `json:"name"`
-	Sys  struct {
+	Name     string `json:"name"`
+	Timezone int    `json:"timezone"`
+	Sys      struct {
 		Country string `json:"country"`
 		Sunrise int64  `json:"sunrise"`
 		Sunset  int64  `json:"sunset"`
