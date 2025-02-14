@@ -14,7 +14,7 @@ import (
 func ReactToRoleSelection(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 
 	// Define the message ID for role selection reactions
-	const welcomeMessageID = "1337605328996405362"
+	const welcomeMessageID = "1339752686777532476"
 
 	// Exit early if message reacted to is not the welcome message. We dont want to process the entire function for every single mesg reacted to in the server
 	if m.MessageID != welcomeMessageID {

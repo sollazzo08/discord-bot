@@ -18,7 +18,7 @@
 - [X] Fix sunrise and sunset time bug: sunset and sunrise are not accurate during late EST hours
 - [ ] Add a weatherCommand handler
 - [ ] Use different API endpoints based on whether it is running locally or in Docker.
-- [ ] Add zip code caching (would require a DB, could look into using sql-lite)
+- [ ] Add zip-code caching (would require a DB, could look into using sql-lite)
 - [X] Update Rate Limit to 25 request per day per user
 - [ ] Handle invalid zip codes
 

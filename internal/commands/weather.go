@@ -80,14 +80,20 @@ func trackUserRequests(m *discordgo.MessageCreate) int {
 	return numberOfRequests
 }
 
-func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate, cfg string) {
 	// Split the message content into parts
 	strSlice := strings.Split(m.Content, " ")
-	fmt.Println("hello")
-	fmt.Println(strSlice)
+
+	weatherCommand := "!weather"
+
+	if cfg == "DEV" {
+		weatherTestCommand := "!weatherTest"
+		weatherCommand = weatherTestCommand
+	}
+
+
 	// Check if the message starts with the weather command
-	if strSlice[0] == "!weatherTest" {
-		fmt.Println("test")
+	if strSlice[0] == weatherCommand {
 		// If no ZIP code is provided
 		if len(strSlice) == 1 {
 			s.ChannelMessageSend(m.ChannelID, "Please enter a 5-digit ZIP code following the !weather command, e.g., `!weather 11111`")

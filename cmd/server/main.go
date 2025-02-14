@@ -30,7 +30,10 @@ func main() {
 
 	// Register messageCreate func as a callback for MesesageCreate events
 
-	discord.AddHandler(commands.MessageCreate)
+	// Pass APP_ENV using a closure
+	discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+		commands.MessageCreate(s, m, cfg.APP_ENV)
+	})
 	discord.AddHandler(events.ReactToRoleSelection)
 
 	err = discord.Open()
