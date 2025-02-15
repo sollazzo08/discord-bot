@@ -1,25 +1,24 @@
 package commands
 
 import (
+	"fmt"
 
 	"github.com/bwmarrin/discordgo"
 )
 
-
-
 const CHANNELID = "786329251338911775"
 
 // We want to return a general MessageData Struct, general enough so that AI can extract the correct detail
-//WE NEED A SUB STRUCT FOR GETTING THE AUTHOR DETAILS OF A EMOJI REACTION ON A MESSAGE
+// WE NEED A SUB STRUCT FOR GETTING THE AUTHOR DETAILS OF A EMOJI REACTION ON A MESSAGE
 type MessageData struct {
-	ID        string // Message ID
-	AuthorID  string // User ID of the sender
-	Username  string // Username of the sender
-	Content   string // The actual message text
-	Timestamp string // Message timestamp
+	ID                   string // Message ID
+	AuthorID             string // User ID of the sender
+	Username             string // Username of the sender
+	Content              string // The actual message text
+	Timestamp            string // Message timestamp
 	EmojiReactionDetails struct {
-		AuthorID  string // User ID of the sender
-		Username  string // Username of the sender
+		AuthorID    string // User ID of the sender
+		Username    string // Username of the sender
 		EmojiDetail string //Emoji details, should be a number rating
 
 	}
@@ -36,8 +35,43 @@ type MessageData struct {
 // We then need to track the id of the last mesg we parsed so we can start the parse over again at that mesg.
 // Repeat until we reach the end, end can be determined by a response of 0 from the ChannelMessages call.
 
-func fetchChannelData (s *discordgo.Session, m *discordgo.MessageCreate, cfg string) {
+func FetchChannelData(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if m.Content != "!parseMovies" {
+		return
+	}
 
-	//allChannelMessage, err := s.ChannelMessages(CHANNELID, 100,, "","")
+	s.ChannelMessageSend(m.ChannelID, "Parsing movies...")
+
+	var lastMessageID string = "" // Start with an empty ID (Discord fetches the most recent messages)
+	limit := 100
+	var allChannelMessages []*discordgo.Message
+
+	for {
+		// Fetch messages before lastMessageID
+		messages, err := s.ChannelMessages(CHANNELID, limit, lastMessageID, "", "")
+		if err != nil {
+			fmt.Println("Error fetching messages:", err)
+			s.ChannelMessageSend(m.ChannelID, "Error fetching messages.")
+			return
+		}
+
+		// If no messages are returned, we've reached the beginning
+		if len(messages) == 0 {
+			break
+		}
+
+		// Append new messages to the collection
+		allChannelMessages = append(allChannelMessages, messages...)
+
+		// Update lastMessageID to the FIRST message fetched in the batch (moving backwards)
+		lastMessageID = messages[len(messages)-1].ID
+	}
+
+	// Notify user about successful parsing
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Fetched %d messages", len(allChannelMessages)))
+
+	// Print message content to console
+	for _, msg := range allChannelMessages {
+		fmt.Println(msg)
+	}
 }
-

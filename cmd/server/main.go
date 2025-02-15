@@ -35,6 +35,7 @@ func main() {
 		commands.MessageCreate(s, m, cfg.APP_ENV)
 	})
 	discord.AddHandler(events.ReactToRoleSelection)
+	discord.AddHandler(commands.FetchChannelData)
 
 	err = discord.Open()
 	if err != nil {

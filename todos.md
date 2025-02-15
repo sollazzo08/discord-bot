@@ -21,8 +21,12 @@
 - [ ] Add zip-code caching (would require a DB, could look into using sql-lite)
 - [X] Update Rate Limit to 25 request per day per user
 - [ ] Handle invalid zip codes
+- [X] Create a parse command for the movies-shows channel
+- [ ] Lock down the parse command to only me
+- [ ] integrate openAI to sift through movie-show data and return a clean data in the form of user profiles with critic data points
+- [ ]
 
 
-once user hits 5 requests we store a timestamp in a cooldown map. If they request a 6th time we get the current time and compare to the timestamp and see if 24 hours has passed.
+
 
 

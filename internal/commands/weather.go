@@ -91,7 +91,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate, cfg string)
 		weatherCommand = weatherTestCommand
 	}
 
-
 	// Check if the message starts with the weather command
 	if strSlice[0] == weatherCommand {
 		// If no ZIP code is provided
