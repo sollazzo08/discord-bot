@@ -2,26 +2,36 @@ package commands
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 const CHANNELID = "786329251338911775"
 
-// We want to return a general MessageData Struct, general enough so that AI can extract the correct detail
-// WE NEED A SUB STRUCT FOR GETTING THE AUTHOR DETAILS OF A EMOJI REACTION ON A MESSAGE
-type MessageData struct {
-	ID                   string // Message ID
-	AuthorID             string // User ID of the sender
-	Username             string // Username of the sender
-	Content              string // The actual message text
-	Timestamp            string // Message timestamp
-	EmojiReactionDetails struct {
-		AuthorID    string // User ID of the sender
-		Username    string // Username of the sender
-		EmojiDetail string //Emoji details, should be a number rating
+func formatChannelData(messages []*discordgo.Message) string {
 
+	if len(messages) == 0 {
+		log.Println("No messages retrieved.")
+		return "No messages found."
 	}
+
+	log.Printf("Fetched %d messages\n", len(messages))
+
+	//Loop through messages directly
+	var formattedMessages string
+	for _, msg := range messages {
+		formattedMessages += fmt.Sprintf(
+			"📩 **Message ID**: %s\n"+
+				"👤 **User**: %s (%s)\n"+
+				"🕒 **Timestamp**: %s\n"+
+				"💬 **Content**: %s\n\n",
+			msg.ID, msg.Author.Username, msg.Author.ID, msg.Timestamp, msg.Content,
+		)
+	}
+
+	log.Println("✅ Successfully formatted messages.")
+	return formattedMessages
 }
 
 // We need to first read the channel called movies-shows. We will need to grab the channel ID
@@ -70,8 +80,5 @@ func FetchChannelData(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Notify user about successful parsing
 	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Fetched %d messages", len(allChannelMessages)))
 
-	// Print message content to console
-	for _, msg := range allChannelMessages {
-		fmt.Println(msg)
-	}
+	formatChannelData(allChannelMessages)
 }
