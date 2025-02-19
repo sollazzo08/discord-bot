@@ -9,6 +9,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sollazzo08/discord-bot/config"
+	"github.com/sollazzo08/discord-bot/internal/ai"
 	"github.com/sollazzo08/discord-bot/internal/commands"
 	"github.com/sollazzo08/discord-bot/internal/events"
 )
@@ -36,6 +37,11 @@ func main() {
 	})
 	discord.AddHandler(events.ReactToRoleSelection)
 	discord.AddHandler(commands.FetchChannelData)
+
+	// Pass OPEN_AI_TOKEN using a closure
+	discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+		ai.UseChatGPT4(s, m, cfg.OPEN_AI_TOKEN)
+	})
 
 	err = discord.Open()
 	if err != nil {

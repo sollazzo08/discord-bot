@@ -9,8 +9,9 @@ import (
 )
 
 type Config struct {
-	BOTTOKEN string
-	APP_ENV  string
+	BOTTOKEN      string
+	APP_ENV       string
+	OPEN_AI_TOKEN string
 }
 
 func LoadConfig() (*Config, error) {
@@ -22,6 +23,10 @@ func LoadConfig() (*Config, error) {
 
 	// Determine the environment
 	appEnv := os.Getenv("APP_ENV")
+
+	// OpenAI Key
+
+	openAiToken := os.Getenv("OPEN_AI_TOKEN")
 
 	// Default to test bot token
 	botToken := os.Getenv("TEST_BOT_TOKEN")
@@ -39,9 +44,15 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("missing required environment variables: BOT_TOKEN")
 	}
 
+	// Ensure that we actually have a bot token
+	if openAiToken == "" {
+		return nil, fmt.Errorf("missing required environment variables: OPEN_AI_TOKEN")
+	}
+
 	return &Config{
-		BOTTOKEN: botToken,
-		APP_ENV:  appEnv,
+		BOTTOKEN:      botToken,
+		APP_ENV:       appEnv,
+		OPEN_AI_TOKEN: openAiToken,
 	}, nil
 
 }

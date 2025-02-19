@@ -22,10 +22,10 @@ func formatChannelData(messages []*discordgo.Message) string {
 	var formattedMessages string
 	for _, msg := range messages {
 		formattedMessages += fmt.Sprintf(
-			"📩 **Message ID**: %s\n"+
-				"👤 **User**: %s (%s)\n"+
-				"🕒 **Timestamp**: %s\n"+
-				"💬 **Content**: %s\n\n",
+			"**Message ID**: %s\n"+
+				"**User**: %s (%s)\n"+
+				"**Timestamp**: %s\n"+
+				"**Content**: %s\n\n",
 			msg.ID, msg.Author.Username, msg.Author.ID, msg.Timestamp, msg.Content,
 		)
 	}
