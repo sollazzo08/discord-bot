@@ -1,26 +1,29 @@
 package db
 
 import (
+	"fmt"
 	"context"
-	"time"
+
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
-	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func ConnectToMongoDB() {
-	clientOption, err := mongo.Connect(options.Client().ApplyURI(""))
+	client, err := mongo.Connect(options.Client().
+		ApplyURI(""))
 	if err != nil {
-		log.Fatal(err)
-	 }
-
-	 defer func() {
-		if err = clientOption.Disconnect(ctx); err != nil {
-				panic(err)
+		panic(err)
+	}
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			panic(err)
 		}
 	}()
+
 }
+
 
 
 
