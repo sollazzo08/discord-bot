@@ -25,8 +25,11 @@ func LoadConfig() (*Config, error) {
 	appEnv := os.Getenv("APP_ENV")
 
 	// OpenAI Key
-
 	openAiToken := os.Getenv("OPEN_AI_TOKEN")
+
+	//MongoURI
+	mongo_URI := os.Getenv("MONGO_DB_URI")
+
 
 	// Default to test bot token
 	botToken := os.Getenv("TEST_BOT_TOKEN")
@@ -48,6 +51,11 @@ func LoadConfig() (*Config, error) {
 	if openAiToken == "" {
 		return nil, fmt.Errorf("missing required environment variables: OPEN_AI_TOKEN")
 	}
+
+		// Ensure that we actually have a bot token
+		if mongo_URI == "" {
+			return nil, fmt.Errorf("missing required environment variables: MONGO_DB_URI")
+		}
 
 	return &Config{
 		BOTTOKEN:      botToken,
