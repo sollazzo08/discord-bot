@@ -11,16 +11,27 @@ import (
 	"github.com/sollazzo08/discord-bot/config"
 	"github.com/sollazzo08/discord-bot/internal/ai"
 	"github.com/sollazzo08/discord-bot/internal/commands"
+	"github.com/sollazzo08/discord-bot/internal/db"
 	"github.com/sollazzo08/discord-bot/internal/events"
 )
 
 func main() {
+	log.Println("Starting Discord Bot...")
 
+	// Load Config
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 		return
 	}
+	log.Println("Connecting to MongoDB...")
+	// Connect to MongoDB
+	err = db.ConnectToMongoDB(cfg.MONGO_DB_URI)
+	if err != nil {
+		fmt.Println("Error connecting to DB", err)
+		return
+	}
+	log.Println("Successfully connected to MongoDB.")
 
 	//Creating a new Discord session
 	discord, err := discordgo.New("Bot " + cfg.BOTTOKEN)
@@ -55,7 +66,7 @@ func main() {
 	// 3. The `<-sc` statement pauses the program, waiting for a signal to arrive.
 	// Once a signal is received, the program continues execution (usually to clean up and exit).
 
-	fmt.Println("Dave Bot is now running.  Press CTRL-C to exit.")
+	log.Println("Dave Bot is now running.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc

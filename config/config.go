@@ -12,6 +12,7 @@ type Config struct {
 	BOTTOKEN      string
 	APP_ENV       string
 	OPEN_AI_TOKEN string
+	MONGO_DB_URI  string
 }
 
 func LoadConfig() (*Config, error) {
@@ -29,7 +30,6 @@ func LoadConfig() (*Config, error) {
 
 	//MongoURI
 	mongo_URI := os.Getenv("MONGO_DB_URI")
-
 
 	// Default to test bot token
 	botToken := os.Getenv("TEST_BOT_TOKEN")
@@ -52,15 +52,16 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("missing required environment variables: OPEN_AI_TOKEN")
 	}
 
-		// Ensure that we actually have a bot token
-		if mongo_URI == "" {
-			return nil, fmt.Errorf("missing required environment variables: MONGO_DB_URI")
-		}
+	// Ensure that we actually have a bot token
+	if mongo_URI == "" {
+		return nil, fmt.Errorf("missing required environment variables: MONGO_DB_URI")
+	}
 
 	return &Config{
 		BOTTOKEN:      botToken,
 		APP_ENV:       appEnv,
 		OPEN_AI_TOKEN: openAiToken,
+		MONGO_DB_URI:  mongo_URI,
 	}, nil
 
 }
