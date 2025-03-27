@@ -24,14 +24,15 @@ jobs:
 
       - name: Sync code to Raspberry Pi (exclude .env)
         run: |
-          rsync -avz --exclude='.env' --delete -e "ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.PI_PORT }}" ./ \
+          rsync -avz --exclude='.env'  ./ \
+            -e "ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.PI_PORT }}" \
             ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }}:${{ secrets.PI_TARGET_PATH }}
 
-      - name: Build and restart Discord bot
+      - name: Build and restart bot using Makefile
         run: |
           ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.PI_PORT }} ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
             export PATH=/usr/local/go/bin:\$PATH &&
             cd ${{ secrets.PI_TARGET_PATH }} &&
-            go build -o bot &&
-            pm2 restart discord-bot || pm2 start ./bot --name discord-bot
+            make build &&
+            pm2 restart discord-bot || pm2 start ./discord-bot --name discord-bot
           "
