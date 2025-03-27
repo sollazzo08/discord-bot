@@ -23,8 +23,7 @@
 - [ ] Lock down the parse command to only me
 - [ ] integrate openAI to sift through movie-show data and return a clean data in the form of user profiles with critic data points
 - [ ] Anonomize data for before sending to openAI
-## Other Ideas
-- FMK random generator
-- Add github action for deploy to raspberry pi
+## Other
+- [X] Add github action for deploy to raspberry pi
 
 
