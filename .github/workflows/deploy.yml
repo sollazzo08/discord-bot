@@ -30,6 +30,7 @@ jobs:
       - name: Build and restart Discord bot
         run: |
           ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.PI_PORT }} ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
+            export PATH=/usr/local/go/bin:\$PATH &&
             cd ${{ secrets.PI_TARGET_PATH }} &&
             go build -o bot &&
             pm2 restart discord-bot || pm2 start ./bot --name discord-bot
