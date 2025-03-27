@@ -25,5 +25,6 @@
 - [ ] Anonomize data for before sending to openAI
 ## Other Ideas
 - FMK random generator
+- Add github action for deploy to raspberry pi
 
 
