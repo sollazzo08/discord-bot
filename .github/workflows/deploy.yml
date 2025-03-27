@@ -1,0 +1,36 @@
+name: Deploy Discord Bot to Raspberry Pi
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PI_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p ${{ secrets.PI_PORT }} -H ${{ secrets.PI_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Sync code to Raspberry Pi (exclude .env)
+        run: |
+          rsync -avz --exclude='.env' --delete -e "ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.PI_PORT }}" ./ \
+            ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }}:${{ secrets.PI_TARGET_PATH }}
+
+      - name: Build and restart Discord bot
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.PI_PORT }} ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
+            cd ${{ secrets.PI_TARGET_PATH }} &&
+            go build -o bot &&
+            pm2 restart discord-bot || pm2 start ./bot --name discord-bot
+          "
